@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -59,19 +60,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // ignore: unused_field
-  final GlobalKey<ScaffoldState> _scaffokey = GlobalKey<ScaffoldState>();
-  static final Completer<GoogleMapController> _controller = Completer();
-  // final Completer<GoogleMapController> _controller =
-  //     Completer<GoogleMapController>();
-
-  static const CameraPosition _cameraPosition = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+   final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+ static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(19.0462959, -98.2003299),
+    zoom: 14.0,
   );
 
-  static const CameraPosition _position = CameraPosition(
+  static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
+      target: LatLng(19.0462959, -98.2003299),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
 
@@ -93,21 +91,29 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          children: <Widget>[
-            GoogleMap(
-              initialCameraPosition: _cameraPosition,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-            )
-          ],
-        ),
+          body: 
+          SizedBox (
+            height: 200,
+            child: GoogleMap(
+            
+        mapType: MapType.hybrid,
+        initialCameraPosition: _kGooglePlex,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+      )
+    )
+          ,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _goToTheLake,
+        label: const Text('To the lake!'),
+        icon: const Icon(Icons.directions_boat),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
